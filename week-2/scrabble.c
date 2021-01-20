@@ -51,7 +51,7 @@ int get_score(char letter)
     int index = 0;
     int ascii = (int)letter;
 
-    if (ispunct(ascii) || isdigit(ascii) || isspace(ascii))
+    if (!isalpha(ascii))
     {
         return 0;
     }
