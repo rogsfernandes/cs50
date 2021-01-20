@@ -3,25 +3,25 @@
 
 int main(void)
 {
-    int startSize;
-    int endSize;
+    int start_size;
+    int end_size;
     int years = 0;
 
     do
     {
-        startSize = get_int("Start size: ");
-    } while (startSize < 9);
+        start_size = get_int("Start size: ");
+    } while (start_size < 9);
 
     do
     {
-        endSize = get_int("End size: ");
-    } while (endSize < startSize);
+        end_size = get_int("End size: ");
+    } while (end_size < start_size);
 
-    while (startSize < endSize)
+    while (start_size < end_size)
     {
-        int born = startSize / 3;
-        int die = startSize / 4;
-        startSize = startSize + born - die;
+        int born = start_size / 3;
+        int die = start_size / 4;
+        start_size = start_size + born - die;
         years++;
     }
 

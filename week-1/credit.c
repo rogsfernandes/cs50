@@ -3,56 +3,56 @@
 #include <string.h>
 #include <cs50.h>
 
-bool isNumberOnly(string digits);
-string isValid(string digits);
-bool validateWithLuhn(string digits);
-bool isMasterCard(string digits);
-bool isVisa(string digits);
-bool isAmex(string digits);
+bool is_number(string digits);
+string is_valid(string digits);
+bool validate_luhn_algorithm(string digits);
+bool is_mastercard(string digits);
+bool is_visa(string digits);
+bool is_amex(string digits);
 
 int main(void)
 {
     string digits = get_string("Number: ");
 
-    while (isNumberOnly(digits) != 0)
+    while (is_number(digits) != 0)
     {
         digits = get_string("Number: ");
     }
 
-    printf("%s\n", isValid(digits));
+    printf("%s\n", is_valid(digits));
 }
 
-bool isNumberOnly(string digits)
+bool is_number(string digits)
 {
     regex_t regex;
     regcomp(&regex, "[^A-Za-z\\-]", 0);
     return regexec(&regex, digits, 0, NULL, 0);
 }
 
-string isValid(string digits)
+string is_valid(string digits)
 {
     if (strlen(digits) < 13)
     {
         return "INVALID";
     }
 
-    bool valid = validateWithLuhn(digits);
+    bool valid = validate_luhn_algorithm(digits);
     if (!valid)
     {
         return "INVALID";
     }
 
-    if (isVisa(digits))
+    if (is_visa(digits))
     {
         return "VISA";
     }
 
-    if (isAmex(digits))
+    if (is_amex(digits))
     {
         return "AMEX";
     }
 
-    if (isMasterCard(digits))
+    if (is_mastercard(digits))
     {
         return "MASTERCARD";
     }
@@ -60,7 +60,7 @@ string isValid(string digits)
     return "INVALID";
 }
 
-bool validateWithLuhn(string digits)
+bool validate_luhn_algorithm(string digits)
 {
     int sum = 0;
     for (int i = strlen(digits) - 2; i < strlen(digits); i = i - 2)
@@ -89,17 +89,17 @@ bool validateWithLuhn(string digits)
     return false;
 }
 
-bool isMasterCard(string digits)
+bool is_mastercard(string digits)
 {
     return digits[0] == '5' && (digits[1] == '1' || digits[1] == '2' || digits[1] == '3' || digits[1] == '4' || digits[1] == '5');
 }
 
-bool isAmex(string digits)
+bool is_amex(string digits)
 {
     return digits[0] == '3' && (digits[1] == '4' || digits[1] == '7');
 }
 
-bool isVisa(string digits)
+bool is_visa(string digits)
 {
     return digits[0] == '4';
 }
