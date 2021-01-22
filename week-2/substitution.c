@@ -54,6 +54,7 @@ char encrypt_char(string key, char c)
 
     if (isupper(c))
     {
+        // getting the key by converting char from ASCII index to alphabetical index
         encrypted = toupper(key[(c - 'A')]);
     }
     else
