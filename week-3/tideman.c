@@ -11,6 +11,8 @@ int preferences[MAX][MAX];
 
 // locked[i][j] means i is locked in over j
 bool locked[MAX][MAX];
+bool creates_cycle = false;
+bool verified[MAX];
 
 // Each pair has a winner, loser
 typedef struct
@@ -28,8 +30,8 @@ int candidate_count;
 
 // Function prototypes
 bool vote(int rank, string name, int ranks[]);
-bool is_valid_lock(int index);
-bool is_cycle(int index, int root, int target);
+void verify_lock(int index);
+void verify_cicle(int root, int target);
 void record_preferences(int ranks[]);
 void add_pairs(void);
 void sort_pairs(void);
@@ -174,75 +176,80 @@ void lock_pairs(void)
 {
     for (int i = 0; i < pair_count; i++)
     {
-        printf("Validating lock[%i][%i]...", pairs[i].winner, pairs[i].loser);
-        if (is_valid_lock(i))
+        locked[pairs[i].winner][pairs[i].loser] = true;
+
+        verify_lock(i);
+
+        if (creates_cycle)
         {
-            locked[pairs[i].winner][pairs[i].loser] = true;
+            locked[pairs[i].winner][pairs[i].loser] = false;
+            creates_cycle = false;
         }
+    }
+
+    for (int i = 0; i < candidate_count; i++)
+        for (int j = 0; j < candidate_count; j++)
+            printf("%s ", locked[i][j] ? "true" : "false");
+
+    return;
+}
+
+void verify_lock(int index)
+{
+    if (index == 0)
+    {
+        return;
     }
 
     for (int i = 0; i < pair_count; i++)
     {
-        printf("lock[%d][%d]=%i\n", pairs[i].winner, pairs[i].loser, locked[pairs[i].winner][pairs[i].loser]);
+        verified[i] = false;
     }
-    return;
+
+    verify_cicle(pairs[index].winner, pairs[index].loser);
 }
 
-bool is_valid_lock(int index)
-{
-    int root = pairs[index].winner;
-    int target = pairs[index].loser;
-
-    return !is_cycle(index, root, target);
-}
-
-bool is_cycle(int index, int root, int target)
+void verify_cicle(int root, int target)
 {
     for (int i = 0; i < pair_count; i++)
     {
         // looks for each pair that has the target as the root and is locked
-        printf("target=%i\n", target);
-        printf("winner=%i\n", pairs[i].winner);
-        printf("locked=%i\n", locked[pairs[i].winner][pairs[i].loser]);
-        if (pairs[i].winner == target && locked[pairs[i].winner][pairs[i].loser] && i != index)
+        if (pairs[i].winner == target && locked[pairs[i].winner][pairs[i].loser] && verified[i] == false)
         {
-            // printf("found %i,%i\n", pairs[i].winner, pairs[i].loser);
             // if the loser is the root and the winner is the target, than it creates a cycle and shouldnt be added
             if (pairs[i].loser == root)
             {
-                return true;
+                creates_cycle = true;
             }
             // else check the connections where this target is the root, to trace every possible way
             else
             {
-                printf("recursion lock[%i][%i]...", pairs[i].winner, pairs[i].loser);
-                return is_cycle(index, root, pairs[i].loser);
+                verify_cicle(root, pairs[i].loser);
             }
         }
     }
-
-    return false;
 }
 
 // Print the winner of the election
 void print_winner(void)
 {
-    for (int i = 0; i < pair_count; i++)
+    for (int i = 0; i < candidate_count; i++)
     {
         // check wether this winner has any edge pointing to they
         bool is_winner = true;
 
-        for (int j = i + 1; j < pair_count; j++)
+        for (int j = 0; j < candidate_count; j++)
         {
-            if (pairs[j].loser == pairs[i].winner && locked[pairs[j].winner][pairs[j].loser])
+            // if any other candidate wins over ith candidate, than it isnt the source
+            if (locked[j][i])
             {
                 is_winner = false;
             }
         }
+
         if (is_winner)
         {
-            printf("%s\n", candidates[pairs[i].winner]);
-            return;
+            printf("%s\n", candidates[i]);
         }
     }
     return;
