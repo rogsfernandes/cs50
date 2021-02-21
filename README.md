@@ -11,5 +11,5 @@ Make sure you install this lib: https://github.com/cs50/libcs50
 
 ### Running
 
-`cclang mycode.c --lcs50 -o mycode`
-`./mycode`
+`make mymodule`
+`./mymodule`
