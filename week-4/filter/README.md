@@ -10,4 +10,6 @@ Run:
 
 __filter_type__:
 
-`-g` for *grayscale* -> in here each pixel are converted to the avarage of RGB in it. Because all three have the same values, it assumes a gray scale.
+`-g` for **grayscale** -> each pixel are transformed to the avarage value of RGB in it. Because all three have the same values, it assumes a gray scale.
+
+`-r` for **reflect** -> each pixel in a image switches position horizontaly, so the first pixel in a row goes to the last pixel position and the last pixel goes to the first position, and so forth.
