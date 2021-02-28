@@ -1,16 +1,18 @@
 #include "helpers.h"
+#include "stdio.h"
+#include "math.h"
 
 // Convert image to grayscale
 void grayscale(int height, int width, RGBTRIPLE image[height][width])
 {
-    for (int i = 0; i < height; i++)
+    for (int y = 0; y < height; y++)
     {
-        for (int j = 0; j < width; j++)
+        for (int x = 0; x < width; x++)
         {
-            int avarage = (image[i][j].rgbtBlue + image[i][j].rgbtGreen + image[i][j].rgbtRed) / 3;
-            image[i][j].rgbtBlue = avarage;
-            image[i][j].rgbtGreen = avarage;
-            image[i][j].rgbtRed = avarage;
+            int avarage = (image[y][x].rgbtBlue + image[y][x].rgbtGreen + image[y][x].rgbtRed) / 3;
+            image[y][x].rgbtBlue = avarage;
+            image[y][x].rgbtGreen = avarage;
+            image[y][x].rgbtRed = avarage;
         }
     }
 
@@ -20,14 +22,14 @@ void grayscale(int height, int width, RGBTRIPLE image[height][width])
 // Reflect image horizontally
 void reflect(int height, int width, RGBTRIPLE image[height][width])
 {
-    for (int i = 0; i < height; i++)
+    for (int y = 0; y < height; y++)
     {
-        for (int j = 0; j < width / 2; j++)
+        for (int x = 0; x < width / 2; x++)
         {
-            int right = width - 1 - j;
-            RGBTRIPLE aux = image[i][j];
-            image[i][j] = image[i][right];
-            image[i][right] = aux;
+            int right = width - 1 - x;
+            RGBTRIPLE aux = image[y][x];
+            image[y][x] = image[y][right];
+            image[y][right] = aux;
         }
     }
 
@@ -37,6 +39,33 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
 // Blur image
 void blur(int height, int width, RGBTRIPLE image[height][width])
 {
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            int minimum_y = (y == 0) ? y : (y - 1);
+            int maximum_y = (y == height - 1) ? y : (y + 1);
+            int minimum_x = (x == 0) ? x : x - 1;
+            int maximum_x = (x == width - 1) ? x : (x + 1);
+            int r = 0, g = 0, b = 0, pixels = 0;
+
+            for (int i = minimum_y; i <= maximum_y; i++)
+            {
+                for (int j = minimum_x; j <= maximum_x; j++)
+                {
+                    r += image[i][j].rgbtRed;
+                    g += image[i][j].rgbtGreen;
+                    b += image[i][j].rgbtBlue;
+                    pixels++;
+                }
+            }
+
+            image[y][x].rgbtRed = round(r / pixels);
+            image[y][x].rgbtGreen = round(g / pixels);
+            image[y][x].rgbtBlue = round(b / pixels);
+        }
+    }
+
     return;
 }
 

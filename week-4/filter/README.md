@@ -10,6 +10,8 @@ Run:
 
 __filter_type__:
 
-`-g` for **grayscale** -> each pixel are transformed to the avarage value of RGB in it. Because all three have the same values, it assumes a gray scale.
+`-g` for **grayscale effect** -> each pixel are transformed to the avarage value of RGB in it. Because all three have the same values, it assumes a gray scale.
 
-`-r` for **reflect** -> each pixel in a image switches position horizontaly, so the first pixel in a row goes to the last pixel position and the last pixel goes to the first position, and so forth.
+`-r` for **reflection effect** -> each pixel in a image switches position horizontaly, so the first pixel in a row goes to the last pixel position and the last pixel goes to the first position, and so forth.
+
+`-b` for **blur effect** -> each pixel changes its RGB values based on the nearest pixels, causing a softening effect on each one.
