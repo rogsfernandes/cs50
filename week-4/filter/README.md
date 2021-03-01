@@ -15,3 +15,5 @@ __filter_type__:
 `-r` for **reflection effect** -> each pixel in a image switches position horizontaly, so the first pixel in a row goes to the last pixel position and the last pixel goes to the first position, and so forth.
 
 `-b` for **blur effect** -> each pixel changes its RGB values based on the nearest pixels, causing a softening effect on each one.
+
+`-e` for **edge effect** -> the edges are highlighted in this cool effect, based on the Sobel operator which uses the 3x3 matrix of adjacent pixels to determine wether this is an edge or not

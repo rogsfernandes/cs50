@@ -72,5 +72,28 @@ void blur(int height, int width, RGBTRIPLE image[height][width])
 // Detect edges
 void edges(int height, int width, RGBTRIPLE image[height][width])
 {
-    return;
-}
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            int r = 0, g = 0, b = 0;
+
+            for (int i = (y - 1); i <= = (y + 1); i++)
+            {
+                if (i == -1 || i == (height - 1))
+                {
+                    continue;
+                }
+
+                for (int j = (x - 1); j <= (x + 1); j++)
+                {
+                    if (j == -1 || j == (width - 1))
+                    {
+                        continue;
+                    }
+                }
+            }
+        }
+
+        return;
+    }
