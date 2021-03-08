@@ -104,11 +104,11 @@ void edges(int height, int width, RGBTRIPLE image[height][width])
             float red_x = 0.0, green_x = 0.0, blue_x = 0.0;
             float red_y = 0.0, green_y = 0.0, blue_y = 0.0;
             float gx_kernel[3][3] = {{-1.0, 0.0, 1.0},
-                                   {-2.0, 0.0, 2.0},
-                                   {-1.0, 0.0, 1.0}};
+                                     {-2.0, 0.0, 2.0},
+                                     {-1.0, 0.0, 1.0}};
             float gy_kernel[3][3] = {{-1.0, -2.0, -1.0},
-                                   {0.0, 0.0, 0.0},
-                                   {1.0, 2.0, 1.0}};
+                                     {0.0, 0.0, 0.0},
+                                     {1.0, 2.0, 1.0}};
 
             // for each point surrounding this point in vertical
             for (int i = 0; i < 3; i++)
@@ -119,22 +119,22 @@ void edges(int height, int width, RGBTRIPLE image[height][width])
                 {
                     int pixel_x = x + (j - 1);
                     bool is_outside_border =
-                        pixel_x == -1 || pixel_x == (width - 1) ||
-                        pixel_y == -1 || pixel_y == (height - 1);
+                        pixel_x == -1 || pixel_x == width ||
+                        pixel_y == -1 || pixel_y == height;
 
                     float red_value = is_outside_border ? 0.0 : image[pixel_y][pixel_x].rgbtRed;
                     float green_value = is_outside_border ? 0.0 : image[pixel_y][pixel_x].rgbtGreen;
                     float blue_value = is_outside_border ? 0.0 : image[pixel_y][pixel_x].rgbtBlue;
 
                     // computing changes in x axis
-                    red_x += red_value * gx_kernel[i][j];
-                    green_x += green_value * gx_kernel[i][j];
-                    blue_x += blue_value * gx_kernel[i][j];
+                    red_x += (red_value * gx_kernel[i][j]);
+                    green_x += (green_value * gx_kernel[i][j]);
+                    blue_x += (blue_value * gx_kernel[i][j]);
 
                     // computing changes in y axis
-                    red_y += red_value * gy_kernel[i][j];
-                    green_y += green_value * gy_kernel[i][j];
-                    blue_y += blue_value * gy_kernel[i][j];
+                    red_y += (red_value * gy_kernel[i][j]);
+                    green_y += (green_value * gy_kernel[i][j]);
+                    blue_y += (blue_value * gy_kernel[i][j]);
                 }
             }
 
@@ -154,6 +154,7 @@ void edges(int height, int width, RGBTRIPLE image[height][width])
         // and each horizontal point
         for (int x = 0; x < width; x++)
         {
+            // copy the value of the pixels with effect applied
             image[y][x] = highlihted[y][x];
         }
     }
