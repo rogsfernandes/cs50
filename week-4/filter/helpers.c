@@ -10,7 +10,7 @@ void grayscale(int height, int width, RGBTRIPLE image[height][width])
     {
         for (int x = 0; x < width; x++)
         {
-            int avarage = (image[y][x].rgbtBlue + image[y][x].rgbtGreen + image[y][x].rgbtRed) / 3;
+            int avarage = round((image[y][x].rgbtBlue + image[y][x].rgbtGreen + image[y][x].rgbtRed) / 3.0);
             image[y][x].rgbtBlue = avarage;
             image[y][x].rgbtGreen = avarage;
             image[y][x].rgbtRed = avarage;
@@ -43,6 +43,8 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
 // Blur image
 void blur(int height, int width, RGBTRIPLE image[height][width])
 {
+    RGBTRIPLE blurred[height][width];
+
     // for each vertical point
     for (int y = 0; y < height; y++)
     {
@@ -51,9 +53,10 @@ void blur(int height, int width, RGBTRIPLE image[height][width])
         {
             int minimum_y = (y == 0) ? y : (y - 1);
             int maximum_y = (y == height - 1) ? y : (y + 1);
-            int minimum_x = (x == 0) ? x : x - 1;
+            int minimum_x = (x == 0) ? x : (x - 1);
             int maximum_x = (x == width - 1) ? x : (x + 1);
-            int r = 0, g = 0, b = 0, pixels = 0;
+            float r = 0.0, g = 0.0, b = 0.0;
+            int pixels = 0;
 
             // for the points surrounding this pixel
             for (int i = minimum_y; i <= maximum_y; i++)
@@ -69,9 +72,18 @@ void blur(int height, int width, RGBTRIPLE image[height][width])
             }
 
             // and make the new value be the avarage of the surrounding pixels sum
-            image[y][x].rgbtRed = round(r / pixels);
-            image[y][x].rgbtGreen = round(g / pixels);
-            image[y][x].rgbtBlue = round(b / pixels);
+            blurred[y][x].rgbtRed = round(r / pixels);
+            blurred[y][x].rgbtGreen = round(g / pixels);
+            blurred[y][x].rgbtBlue = round(b / pixels);
+        }
+    }
+
+    // copying the blurred image to the original one
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            image[y][x] = blurred[y][x];
         }
     }
 
@@ -81,20 +93,22 @@ void blur(int height, int width, RGBTRIPLE image[height][width])
 // Detect edges
 void edges(int height, int width, RGBTRIPLE image[height][width])
 {
+    RGBTRIPLE highlihted[height][width];
+
     // for each point in y axis
     for (int y = 0; y < height; y++)
     {
         // and for each point in x axis
         for (int x = 0; x < width; x++)
         {
-            int red_x = 0, green_x = 0, blue_x = 0;
-            int red_y = 0, green_y = 0, blue_y = 0;
-            int gx_kernel[3][3] = {{-1, 0, 1},
-                                   {-2, 0, 2},
-                                   {-1, 0, 1}};
-            int gy_kernel[3][3] = {{-1, -2, -1},
-                                   {0, 0, 0},
-                                   {1, 2, 1}};
+            float red_x = 0.0, green_x = 0.0, blue_x = 0.0;
+            float red_y = 0.0, green_y = 0.0, blue_y = 0.0;
+            float gx_kernel[3][3] = {{-1.0, 0.0, 1.0},
+                                   {-2.0, 0.0, 2.0},
+                                   {-1.0, 0.0, 1.0}};
+            float gy_kernel[3][3] = {{-1.0, -2.0, -1.0},
+                                   {0.0, 0.0, 0.0},
+                                   {1.0, 2.0, 1.0}};
 
             // for each point surrounding this point in vertical
             for (int i = 0; i < 3; i++)
@@ -108,9 +122,9 @@ void edges(int height, int width, RGBTRIPLE image[height][width])
                         pixel_x == -1 || pixel_x == (width - 1) ||
                         pixel_y == -1 || pixel_y == (height - 1);
 
-                    int red_value = is_outside_border ? 0 : image[pixel_y][pixel_x].rgbtRed;
-                    int green_value = is_outside_border ? 0 : image[pixel_y][pixel_x].rgbtGreen;
-                    int blue_value = is_outside_border ? 0 : image[pixel_y][pixel_x].rgbtBlue;
+                    float red_value = is_outside_border ? 0.0 : image[pixel_y][pixel_x].rgbtRed;
+                    float green_value = is_outside_border ? 0.0 : image[pixel_y][pixel_x].rgbtGreen;
+                    float blue_value = is_outside_border ? 0.0 : image[pixel_y][pixel_x].rgbtBlue;
 
                     // computing changes in x axis
                     red_x += red_value * gx_kernel[i][j];
@@ -124,13 +138,23 @@ void edges(int height, int width, RGBTRIPLE image[height][width])
                 }
             }
 
-            int r = sqrt(pow(red_x, 2) + pow(red_y, 2));
-            int g = sqrt(pow(green_x, 2) + pow(green_y, 2));
-            int b = sqrt(pow(blue_x, 2) + pow(blue_y, 2));
+            int r = round(sqrt(pow(red_x, 2.0) + pow(red_y, 2.0)));
+            int g = round(sqrt(pow(green_x, 2.0) + pow(green_y, 2.0)));
+            int b = round(sqrt(pow(blue_x, 2.0) + pow(blue_y, 2.0)));
 
-            image[y][x].rgbtRed = r > 255 ? 255 : r;
-            image[y][x].rgbtGreen = g > 255 ? 255 : g;
-            image[y][x].rgbtBlue = b > 255 ? 255 : b;
+            highlihted[y][x].rgbtRed = r > 255 ? 255 : r;
+            highlihted[y][x].rgbtGreen = g > 255 ? 255 : g;
+            highlihted[y][x].rgbtBlue = b > 255 ? 255 : b;
+        }
+    }
+
+    // for each vertical point
+    for (int y = 0; y < height; y++)
+    {
+        // and each horizontal point
+        for (int x = 0; x < width; x++)
+        {
+            image[y][x] = highlihted[y][x];
         }
     }
 
