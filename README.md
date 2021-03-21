@@ -10,6 +10,7 @@ week-1 -> C
 week-2 -> Arrays
 week-3 -> Algorithms
 week-4 -> Memory 
+week-5 -> Data Structures
 
 ### Installing
 
