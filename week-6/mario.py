@@ -17,7 +17,9 @@ def print_pyramid(height, original_height=None):
     print_pyramid(height-1, original_height)
     blocks = ""
 
+    # print left pad
     print("".rjust(original_height - height), end="")
+    # concatenate blocks
     for i in range(height):
         blocks += "#"
     print(f"{blocks}  {blocks}")
