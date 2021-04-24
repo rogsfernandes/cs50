@@ -13,6 +13,7 @@ week-4 -> Memory
 week-5 -> Data Structures
 week-6 -> Python
 week-7 -> SQL
+week-8 -> HTML, CSS and JavaScript
 
 ### Installing
 

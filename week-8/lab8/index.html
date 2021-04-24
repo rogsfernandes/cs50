@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <title>Trivia!</title>
+
+        <script>
+
+            function partOne() {
+                const partOneBlock = document.querySelector('#part-one')
+                const buttons = partOneBlock.querySelectorAll('button')
+
+                function cleanState() {
+                    buttons.forEach(button => button.style.backgroundColor = '#d9edff')
+                }
+
+                buttons.forEach(function(button) {
+                    button.addEventListener('click', function(event) {
+                        cleanState()
+
+                        const result = document.querySelector('#part-one--result');
+                        if(event.target.innerHTML === 'Portuguese') {
+                            event.target.style.backgroundColor = '#00ff00'
+                            result.innerHTML = 'Correct!'
+                        } else {
+                            event.target.style.backgroundColor = '#ff0000'
+                            result.innerHTML = 'Incorrect'
+                        }
+                    })
+                })
+            }
+
+            function partTwo() {
+                const partTwoBlock = document.querySelector('#part-two')
+                const submitButton = partTwoBlock.querySelector('button')
+
+                submitButton.addEventListener('click', function() {
+                    const result = document.querySelector('#part-two--result');
+                    const input = partTwoBlock.querySelector('input')
+                    if (input.value && input.value.toLowerCase() === 'brazil') {
+                        result.innerHTML = 'Correct!'
+                        input.style.backgroundColor = '#00ff00'
+                    } else {
+                        result.innerHTML = 'Incorrect'
+                        input.style.backgroundColor = '#ff0000'
+                    }
+                })
+            }
+
+            function startTrivia() {
+                partOne()
+                partTwo()
+            }
+
+            document.addEventListener('DOMContentLoaded', startTrivia)
+
+        </script>
+
+    </head>
+    <body>
+
+        <div class="jumbotron">
+            <h1>Trivia!</h1>
+        </div>
+
+        <div class="container">
+
+            <div id="part-one" class="section">
+                <h2>Part 1: Multiple Choice </h2>
+                <hr>
+
+                <h3>Which language do most brazilians speak today?</h3>
+                <h4 id='part-one--result'></h4>
+
+                <button>Spanish</button>
+                <button>Portuguese</button>
+                <button>English</button>
+                <button>French</button>
+
+            </div>
+
+            <div id="part-two" class="section">
+                <h2>Part 2: Free Response</h2>
+                <hr>
+
+                <h3>Which is the biggest country in South America?</h3>
+                <h4 id='part-two--result'></h4>
+                <input type="text" /> <button>Check Answer</button>
+            </div>
+        </div>
+    </body>
+</html>
