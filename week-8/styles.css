@@ -1,0 +1,36 @@
+footer {
+    text-align: center;
+}
+
+#main {
+    display: flex;
+    min-height: 80vh;
+    align-items: center;
+}
+
+.captions{
+    font-size: 12px;
+    font-style: italic;
+}
+
+[cardgroup] {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+[card] {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    margin: 1px;
+    justify-content: center;
+    min-width: 10rem;
+    min-height: 10rem;
+    color: #fff;
+    background-color: #0000f1;
+    transition: 1s;
+}
+
+[card]:hover {
+    background-color: #000;
+}
