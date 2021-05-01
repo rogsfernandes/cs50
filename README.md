@@ -1,25 +1,42 @@
-# cs50
-Harvard's CS50 Tasks. Computer Science for Web Development
+# CS50 Tasks
+My personal take on Harvard's CS50 programs (web, AI and games)!
 
-[Course link](https://www.edx.org/professional-certificate/harvardx-computer-science-for-web-programming)
+**__Very Important__:** This repository serves only for personal progress register and curiosity purposes. **You should not use it as a source of solutions for the problems of the Edx course's CS50x, because this action would be against the [ethic code](https://cs50.harvard.edu/x/2021/honesty/) that you need to follow in order to complete the course correctly**. Use this only after you provide your working answer to compare different solutions or to suggest enhancements (please!). Remember that you have access to [communities](https://cs50.harvard.edu/x/2021/communities/) that will help you complete your journey. This is an awesome course and I really hope that you will respect the staff work and commit to the ethic code! Thank you!
 
-Problems explanations can be found in here: https://cs50.harvard.edu/x/2021/
+<hr>
 
-week-0 -> Scratch
-week-1 -> C
-week-2 -> Arrays
-week-3 -> Algorithms
-week-4 -> Memory 
-week-5 -> Data Structures
-week-6 -> Python
-week-7 -> SQL
-week-8 -> HTML, CSS and JavaScript
+### Preparing your environment:
 
-### Installing
+Some problems are solved in C and others in Python.
 
-Make sure you install this lib: https://github.com/cs50/libcs50
+|   Language |  Dependencies:                       |
+| ---------- | --------------------                 |
+| C |  [cs50 lib for C](https://github.com/cs50/libcs50)  |
+| Python |  cs50 lib for python  |
+| JavaScript |  node  |
+
 
 ### Running
 
-`make mymodule`
-`./mymodule`
+C: `make mymodule ./mymodule`
+Python: `python mymodule.py`
+Web: `npx http-server`
+
+Problems explanations can be found in here: https://cs50.harvard.edu/x/2021/
+
+Folder structure:
+
+```
+./week-0 -> Scratch
+./week-1 -> C
+./week-2 -> Arrays
+./week-3 -> Algorithms
+./week-4 -> Memory 
+./week-5 -> Data Structures
+./week-6 -> Python
+./week-7 -> SQL
+./week-8 -> HTML, CSS and JavaScript
+./week-9 -> Flask
+./week-10 -> Ethics
+./week-11 -> Final Project
+```
