@@ -115,9 +115,11 @@ def logout():
 @app.route("/quote", methods=["GET", "POST"])
 @login_required
 def quote():
-    """Get stock quote."""
-    return apology("TODO")
-
+    if request.method == "POST":
+        quote = lookup(request.form.get("symbol"))
+        return render_template("quoted.html", quote=quote)
+    else:
+        return render_template("quote.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -138,7 +140,7 @@ def register():
         else:
             # Validates if username already exists
             rows = db.execute("SELECT * FROM users WHERE username = ?",
-                            request.form.get("username"))
+                              request.form.get("username"))
             if len(rows) > 0:
                 return apology("Username already exists")
 
@@ -152,7 +154,7 @@ def register():
         if result:
             # Query database for username
             rows = db.execute("SELECT * FROM users WHERE username = ?",
-                            request.form.get("username"))
+                              request.form.get("username"))
 
             session["user_id"] = rows[0]["id"]
 
