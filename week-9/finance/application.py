@@ -53,8 +53,16 @@ def index():
 @app.route("/buy", methods=["GET", "POST"])
 @login_required
 def buy():
-    """Buy shares of stock"""
-    return apology("TODO")
+    # Buy shares of stock
+    if request.method == 'POST':
+        # Validate symbol request data
+        if not request.form.get("symbol") or not lookup(request.form.get("symbol")):
+            return apology('Symbol not found!')
+        else:
+            print(request.form.get("symbol"))
+            return apology('Not implemented!')
+    else:
+        return render_template("buy.html")
 
 
 @app.route("/history")
@@ -120,6 +128,7 @@ def quote():
         return render_template("quoted.html", quote=quote)
     else:
         return render_template("quote.html")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
