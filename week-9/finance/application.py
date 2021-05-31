@@ -54,13 +54,16 @@ def index():
 @login_required
 def buy():
     # Buy shares of stock
-    if request.method == 'POST':
-        # Validate symbol request data
+    if request.method == "POST":
+        # Validate symbol
         if not request.form.get("symbol") or not lookup(request.form.get("symbol")):
-            return apology('Symbol not found!')
+            return apology("Symbol not found!")
+        # Validate shares number
+        if not request.form.get("shares") or int(request.form.get("shares")) < 0:
+            return apology("Shares quantity must be a positive number.")
         else:
             print(request.form.get("symbol"))
-            return apology('Not implemented!')
+            return apology("Not implemented!")
     else:
         return render_template("buy.html")
 
