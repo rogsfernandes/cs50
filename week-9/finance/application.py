@@ -5,7 +5,8 @@ from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 
-from api.user import register_user, signin
+from server.actions.stock import buy_stock
+from server.actions.user import register_user, signin
 from helpers import apology, login_required, lookup, usd
 
 # Configure application
@@ -50,17 +51,7 @@ def index():
 def buy():
     # Buy shares of stock
     if request.method == "POST":
-        # Validate symbol
-        if not request.form.get("symbol") or not lookup(request.form.get("symbol")):
-            return apology("Symbol not found!")
-        # Validate shares number
-        if not request.form.get("shares") or int(request.form.get("shares")) < 0:
-            return apology("Shares quantity must be a positive number.")
-
-        symbol = request.form.get("symbol")
-        shares = request.form.get("shares")
-
-        return apology("Not implemented!")
+        return buy_stock(request)
     else:
         return render_template("buy.html")
 
@@ -110,7 +101,6 @@ def quote():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """Register user"""
     if request.method == "POST":
         return register_user(request, session)
     else:
@@ -124,7 +114,7 @@ def sell():
     return apology("TODO")
 
 
-def errorhandler(e):
+def error_handler(e):
     """Handle error"""
     if not isinstance(e, HTTPException):
         e = InternalServerError()
@@ -133,4 +123,4 @@ def errorhandler(e):
 
 # Listen for errors
 for code in default_exceptions:
-    app.errorhandler(code)(errorhandler)
+    app.errorhandler(code)(error_handler)

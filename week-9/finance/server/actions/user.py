@@ -1,8 +1,9 @@
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 from flask import redirect
 
-from database.sqlite import db
+from core.services.user import UserService
 from helpers import apology
+from server.database.sqlite import db
 
 
 def register_user(request, session):
@@ -11,32 +12,17 @@ def register_user(request, session):
         return apology("must provide username", 403)
 
     # Ensure password was submitted
-    elif not request.form.get("password"):
+    if not request.form.get("password"):
         return apology("must provide password", 403)
 
     # Ensure confirmation is equal password
-    elif request.form.get("password") != request.form.get("confirmation"):
+    if request.form.get("password") != request.form.get("confirmation"):
         return apology("password and confirmation doesn't match", 403)
 
-    else:
-        # Validates if username already exists
-        rows = db.execute("SELECT * FROM users WHERE username = ?",
-                          request.form.get("username"))
-        if len(rows) > 0:
-            return apology("Username already exists")
+    user_service = UserService()
+    rows = user_service.register(request.form.get("username"), request.form.get("password"))
 
-    # Generate password hash
-    hash = generate_password_hash(request.form.get("password"))
-
-    # Register user
-    result = db.execute("INSERT INTO users (username, hash) VALUES (?, ?)",
-                        request.form.get("username"), hash)
-
-    if result:
-        # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = ?",
-                          request.form.get("username"))
-
+    if len(rows) > 0:
         session["user_id"] = rows[0]["id"]
 
         return redirect("/")
