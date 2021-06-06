@@ -5,9 +5,10 @@ from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 
+from core.services.stock import StockService
 from server.actions.stock import buy_stock
 from server.actions.user import register_user, signin
-from helpers import apology, login_required, lookup, usd
+from server.helpers import apology, login_required, usd
 
 # Configure application
 app = Flask(__name__)
@@ -93,8 +94,9 @@ def logout():
 @login_required
 def quote():
     if request.method == "POST":
-        quote_instance = lookup(request.form.get("symbol"))
-        return render_template("quoted.html", quote=quote_instance)
+        stock_service = StockService()
+        stock = stock_service.get(request.form.get("symbol"))
+        return render_template("quoted.html", quote=stock)
     else:
         return render_template("quote.html")
 

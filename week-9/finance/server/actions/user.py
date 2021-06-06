@@ -2,7 +2,7 @@ from werkzeug.security import check_password_hash
 from flask import redirect
 
 from core.services.user import UserService
-from helpers import apology
+from server.helpers import apology
 from server.database.sqlite import db
 
 
