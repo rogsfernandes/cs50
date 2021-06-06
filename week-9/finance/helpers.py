@@ -34,7 +34,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-
+# TODO: move this to StockService and use Stock class to return a instance
 def lookup(symbol):
     """Look up quote for symbol."""
 

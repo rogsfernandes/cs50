@@ -1,9 +1,18 @@
 from werkzeug.security import generate_password_hash
 
+from core.domain.user import User
 from server.database.sqlite import db
 
 
 class UserService:
+    def get(self, id):
+        rows = db.execute("SELECT * FROM users WHERE id = ?", id)
+        if len(rows) > 0:
+            row = rows[0]
+            return User(row["id"], row["username"], row["cash"])
+        else:
+            return rows
+
     def register(self, username, password):
         # Validates if username already exists
         rows = db.execute("SELECT * FROM users WHERE username = ?", username)
