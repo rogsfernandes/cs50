@@ -1,8 +1,9 @@
 from flask import session
 from werkzeug.utils import redirect
 
-from core.services.stock import StockService
-from core.services.user import UserService
+from core.services.stock_service import StockService
+from core.services.transaction_service import TransactionService
+from core.services.user_service import UserService
 from server.helpers import apology
 
 def buy_stock(request):
@@ -19,10 +20,11 @@ def buy_stock(request):
     shares = int(request.form.get("shares"))
     id = session["user_id"]
     user_service = UserService()
+    transaction_service = TransactionService()
 
     # Gets user available cash
-    user = user_service.get(id)
-    success = stock_service.buy(user.id, stock.symbol, shares, stock.price)
+    user = user_service.get_by_id(id)
+    success = transaction_service.register(user.id, stock.symbol, shares)
 
     if success:
         return redirect("/")

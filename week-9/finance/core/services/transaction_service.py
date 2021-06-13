@@ -1,17 +1,17 @@
 from core.domain.stock import Stock
 from core.domain.transaction import Transaction
-from core.services.stock import StockService
+from core.services.stock_service import StockService
 from server.database.sqlite import db
 
 
 class TransactionService:
-    def register(self, user_id, symbol, quantity, price):
+    def register(self, user_id, symbol, quantity):
         stock_service = StockService()
         stock = stock_service.get(symbol)
         total = quantity * stock.price
         rows = db.execute("INSERT INTO transactions (user_id, stock_id, quantity, price, total) values (?, ?, ?, ?, ?)",
                           user_id,
-                          symbol,
+                          stock.id,
                           quantity,
                           stock.price,
                           total)

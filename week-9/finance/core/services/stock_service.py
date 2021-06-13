@@ -23,16 +23,15 @@ class StockService:
         # Parse response
         try:
             quote = response.json()
-            stock = Stock(quote["companyName"], quote["symbol"], float(quote["latestPrice"]))
             # Check whether we already have this stock in our database
-            rows = db.execute("SELECT * FROM stocks WHERE symbol = ?", stock.symbol)
-            if len(rows) > 0:
-                return stock
-            else:
+            rows = db.execute("SELECT * FROM stocks WHERE symbol = ?", quote["symbol"])
+
+            if len(rows) == 0:
                 # Register if stock is new
-                db.execute("INSERT INTO stocks(name, symbol) VALUES(?, ?)", stock.name, stock.symbol)
-                return stock
+                db.execute("INSERT INTO stocks(name, symbol) VALUES(?, ?)", quote["companyName"], quote["symbol"])
+                rows = db.execute("SELECT * FROM stocks WHERE symbol = ?", quote["symbol"])
+
+            stock = Stock(rows[0]["id"], rows[0]["name"], rows[0]["symbol"], float(quote["latestPrice"]))
+            return stock
         except (KeyError, TypeError, ValueError):
             return None
-
-

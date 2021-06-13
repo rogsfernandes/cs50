@@ -2,7 +2,7 @@ from werkzeug.security import generate_password_hash
 
 from core.domain.portfolio import Portfolio
 from core.domain.user import User
-from core.services.portfolio import PortfolioService
+from core.services.portfolio_service import PortfolioService
 from server.database.sqlite import db
 
 
@@ -19,13 +19,13 @@ class UserService:
             row = rows[0]
             return User(row["id"], row["username"], row["cash"], row["hash"])
         else:
-            return rows
+            return None
 
     def register(self, username, password):
         # Validates if username already exists
         rows = db.execute("SELECT * FROM users WHERE username = ?", username)
         if len(rows) > 0:
-            return []
+            return None
 
         # Generate password hash
         hash = generate_password_hash(password)

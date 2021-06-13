@@ -5,7 +5,7 @@ from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 
-from core.services.stock import StockService
+from core.services.stock_service import StockService
 from server.actions.stock import buy_stock
 from server.actions.user import register_user, signin
 from server.helpers import apology, login_required, usd
@@ -43,7 +43,8 @@ if not os.environ.get("API_KEY"):
 @app.route("/")
 @login_required
 def index():
-    """Show portfolio of stocks"""
+    # Get User's Stock Portfolio
+    # portfolio = get_portfolio(session)
     return render_template("index.html")
 
 
