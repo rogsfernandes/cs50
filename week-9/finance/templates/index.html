@@ -16,15 +16,15 @@ Home
         </tr>
     </thead>
     <tbody>
-        <tr>
-            {% for share in portfolio.shares %}
+        {% for share in portfolio.shares %}
+            <tr>
                 <td>{{share.stock.symbol}}</td>
                 <td>{{share.stock.name}}</td>
                 <td>{{share.quantity}}</td>
                 <td>{{share.average_price}}</td>
                 <td>{{share.total}}</td>
-            {% endfor %}
-        </tr>
+            </tr>
+        {% endfor %}
         <tr>
             <td></td>
             <td></td>

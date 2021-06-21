@@ -114,7 +114,12 @@ def register():
 @login_required
 def sell():
     """Sell shares of stock"""
-    return apology("TODO")
+    if request.method == "POST":
+        return apology("Not implemented")
+    else:
+        portfolio = get_portfolio(session)
+        return render_template("sell.html", shares=portfolio.shares)
+
 
 
 def error_handler(e):

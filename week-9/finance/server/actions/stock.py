@@ -24,9 +24,11 @@ def buy_stock(request):
 
     # Gets user available cash
     user = user_service.get_by_id(id)
-    success = transaction_service.register(user.id, stock.symbol, shares)
+    success = transaction_service.register(user.id, stock.symbol, shares, "BUY")
 
     if success:
         return redirect("/")
     else:
         return apology("Not enough money!")
+
+# def sell_stock(request):
