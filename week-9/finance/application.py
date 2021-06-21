@@ -7,7 +7,7 @@ from werkzeug.exceptions import default_exceptions, HTTPException, InternalServe
 
 from core.services.stock_service import StockService
 from server.actions.stock import buy_stock
-from server.actions.user import register_user, signin
+from server.actions.user import register_user, signin, get_portfolio
 from server.helpers import apology, login_required, usd
 
 # Configure application
@@ -44,8 +44,8 @@ if not os.environ.get("API_KEY"):
 @login_required
 def index():
     # Get User's Stock Portfolio
-    # portfolio = get_portfolio(session)
-    return render_template("index.html")
+    portfolio = get_portfolio(session)
+    return render_template("index.html", portfolio=portfolio)
 
 
 @app.route("/buy", methods=["GET", "POST"])
