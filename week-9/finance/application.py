@@ -121,7 +121,6 @@ def sell():
         return render_template("sell.html", shares=portfolio.shares)
 
 
-
 def error_handler(e):
     """Handle error"""
     if not isinstance(e, HTTPException):
