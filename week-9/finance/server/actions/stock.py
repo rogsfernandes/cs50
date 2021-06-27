@@ -24,8 +24,8 @@ def buy_stock(request):
     transaction_service = TransactionService()
 
     # Gets user available cash
+    success = transaction_service.register(id, stock.symbol, stock.price, shares, "BUY")
     user = user_service.get_by_id(id)
-    success = transaction_service.register(user.id, stock.symbol, stock.price, shares, "BUY")
     user.set_shares(user_service.get_shares(user.id))
 
     if success:
@@ -35,9 +35,9 @@ def buy_stock(request):
 
 
 def sell_stock(request):
-    id = session["user_id"]
+    user_id = session["user_id"]
     user_service = UserService()
-    user = user_service.get_by_id(id)
+    user = user_service.get_by_id(user_id)
     user.set_shares(user_service.get_shares(user.id))
 
     found = False
@@ -46,6 +46,8 @@ def sell_stock(request):
             found = True
             transaction_service = TransactionService()
             transaction_service.register(user.id, request.form.get("symbol"), share.stock.price, int(request.form.get("shares")), "SELL")
+
+            user = user_service.get_by_id(user_id)
             user.set_shares(user_service.get_shares(user.id))
             return user
 

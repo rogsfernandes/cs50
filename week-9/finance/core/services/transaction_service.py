@@ -13,7 +13,6 @@ class TransactionService:
 
         if type == "BUY":
             self.register_buy(user_shares, shares, user_id, symbol, total)
-
         elif type == "SELL":
             self.register_sell(user_shares, shares, user_id, symbol, total)
 
@@ -31,10 +30,11 @@ class TransactionService:
     def register_buy(self, user_shares, shares, user_id, symbol, total):
         is_update = False
         for share in user_shares:
-            is_update = True
-            updated_shares = int(share["shares"]) + shares
-            db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ? AND symbol = ?", updated_shares,
-                       user_id, symbol)
+            if share["symbol"] == symbol:
+                is_update = True
+                updated_shares = int(share["shares"]) + shares
+                db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ? AND symbol = ?", updated_shares,
+                           user_id, symbol)
 
         if not is_update:
             db.execute("INSERT INTO users_shares (user_id, symbol, shares) VALUES (?, ?, ?)", user_id, symbol,
