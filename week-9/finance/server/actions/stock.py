@@ -38,15 +38,16 @@ def sell_stock(request):
     id = session["user_id"]
     user_service = UserService()
     user = user_service.get_by_id(id)
+    user.set_shares(user_service.get_shares(user.id))
 
     found = False
     for share in user.shares:
-        print(request.form.get("symbol"))
         if share.stock.symbol == request.form.get("symbol") and share.number >= int(request.form.get("shares")):
-            transaction_service = TransactionService()
-            transaction_service.register(user.id, request.form.get("symbol"), int(request.form.get("shares")),
-                                         "SELL")
             found = True
+            transaction_service = TransactionService()
+            transaction_service.register(user.id, request.form.get("symbol"), share.stock.price, int(request.form.get("shares")), "SELL")
+            user.set_shares(user_service.get_shares(user.id))
+            return user
 
     if not found:
         raise ValueError

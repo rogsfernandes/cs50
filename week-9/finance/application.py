@@ -119,8 +119,8 @@ def sell():
     """Sell shares of stock"""
     if request.method == "POST":
         try:
-            sell_stock(request)
-            return redirect("/")
+            user = sell_stock(request)
+            return render_template("index.html", user=user)
         except ValueError:
             return apology("No shares to sell.")
     else:

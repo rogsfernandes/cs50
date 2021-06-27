@@ -8,16 +8,17 @@ class TransactionService:
         # Register user share
         total = shares * price
         user_shares = db.execute("SELECT * FROM users_shares WHERE user_id = ?", user_id)
+        is_update = False
+
         for share in user_shares:
             if share["symbol"] == symbol:
+                is_update = True
                 updated_shares = int(share["shares"]) + shares if type == "BUY" else int(share["shares"]) - shares
                 db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ?", updated_shares, user_id)
-            else:
-                if type == "SELL":
-                    raise ValueError
-                else:
-                    db.execute("INSERT INTO users_shares (user_id, symbol, shares) VALUES (?, ?, ?)", user_id, symbol,
-                               shares)
+
+        if not is_update and type == "BUY":
+            db.execute("INSERT INTO users_shares (user_id, symbol, shares) VALUES (?, ?, ?)", user_id, symbol,
+                       shares)
 
         if len(user_shares) == 0:
             db.execute("INSERT INTO users_shares (user_id, symbol, shares) VALUES (?, ?, ?)", user_id, symbol,
