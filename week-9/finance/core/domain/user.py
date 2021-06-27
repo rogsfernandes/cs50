@@ -11,6 +11,7 @@ class User:
     cash: float
     shares: List[Share]
     total: float
+    balance: float
     __hash: str
 
     def __init__(self, id, username, cash, hash: str, shares: List[Share]):
@@ -19,6 +20,7 @@ class User:
         self.cash = cash
         self.__hash = hash
         self.set_shares(shares)
+        self.balance = self.cash + self.total
 
     def get_hash(self):
         return self.__hash

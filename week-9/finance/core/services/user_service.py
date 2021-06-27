@@ -47,3 +47,11 @@ class UserService:
         )
         shares = [Share(stock_service.get(row["symbol"]), row["shares"]) for row in rows]
         return shares
+
+    def add_cash(self, user_id, amount):
+        user = self.get_by_id(user_id)
+        db.execute("UPDATE users SET cash = ?", user.cash + amount)
+
+    def subtract_cash(self, user_id, amount):
+        user = self.get_by_id(user_id)
+        db.execute("UPDATE users SET cash = ?", user.cash - amount)
