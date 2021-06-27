@@ -1,20 +1,35 @@
 from core.domain.stock import Stock
 from core.domain.transaction import Transaction
-from core.services.stock_service import StockService
 from server.database.sqlite import db
 
 
 class TransactionService:
-    def register(self, user_id, symbol, quantity, type):
-        stock_service = StockService()
-        stock = stock_service.get(symbol)
-        total = quantity * stock.price
+    def register(self, user_id, symbol, price, shares, type):
+        # Register user share
+        total = shares * price
+        user_shares = db.execute("SELECT * FROM users_shares WHERE user_id = ?", user_id)
+        for share in user_shares:
+            if share["symbol"] == symbol:
+                updated_shares = int(share["shares"]) + shares if type == "BUY" else int(share["shares"]) - shares
+                db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ?", updated_shares, user_id)
+            else:
+                if type == "SELL":
+                    raise ValueError
+                else:
+                    db.execute("INSERT INTO users_shares (user_id, symbol, shares) VALUES (?, ?, ?)", user_id, symbol,
+                               shares)
+
+        if len(user_shares) == 0:
+            db.execute("INSERT INTO users_shares (user_id, symbol, shares) VALUES (?, ?, ?)", user_id, symbol,
+                       shares)
+
+        # Register transaction
         rows = db.execute(
-            "INSERT INTO transactions (user_id, stock_id, quantity, price, total, type) values (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO transactions (user_id, symbol, shares, price, total, type) values (?, ?, ?, ?, ?, ?)",
             user_id,
-            stock.id,
-            quantity,
-            stock.price,
+            symbol,
+            shares,
+            price,
             total,
             type)
         return rows > 0
@@ -25,7 +40,7 @@ class TransactionService:
             row["name"],
             row["symbol"],
             row["price"]),
-            row["quantity"],
+            row["shares"],
             row["total"],
             row["average_price"],
             row["type"]) for row in rows]

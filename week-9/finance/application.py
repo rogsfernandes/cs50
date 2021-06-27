@@ -6,8 +6,8 @@ from flask_session import Session
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 
 from core.services.stock_service import StockService
-from server.actions.stock import buy_stock
-from server.actions.user import register_user, signin, get_portfolio
+from server.actions.stock import buy_stock, sell_stock
+from server.actions.user import register_user, signin, get_user
 from server.helpers import apology, login_required, usd
 
 # Configure application
@@ -43,15 +43,15 @@ if not os.environ.get("API_KEY"):
 @app.route("/")
 @login_required
 def index():
-    # Get User's Stock Portfolio
-    portfolio = get_portfolio(session)
-    return render_template("index.html", portfolio=portfolio)
+    """Get User's data"""
+    user = get_user(session)
+    return render_template("index.html", user=user)
 
 
 @app.route("/buy", methods=["GET", "POST"])
 @login_required
 def buy():
-    # Buy shares of stock
+    """Buy shares of stock"""
     if request.method == "POST":
         return buy_stock(request)
     else:
@@ -75,6 +75,7 @@ def login():
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         return signin(request, session)
+
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("login.html")
@@ -94,6 +95,7 @@ def logout():
 @app.route("/quote", methods=["GET", "POST"])
 @login_required
 def quote():
+    """Quote the value of a stock"""
     if request.method == "POST":
         stock_service = StockService()
         stock = stock_service.get(request.form.get("symbol"))
@@ -104,6 +106,7 @@ def quote():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    """Register user"""
     if request.method == "POST":
         return register_user(request, session)
     else:
@@ -115,10 +118,14 @@ def register():
 def sell():
     """Sell shares of stock"""
     if request.method == "POST":
-        return apology("Not implemented")
+        try:
+            sell_stock(request)
+            return redirect("/")
+        except ValueError:
+            return apology("No shares to sell.")
     else:
-        portfolio = get_portfolio(session)
-        return render_template("sell.html", shares=portfolio.shares)
+        user = get_user(session)
+        return render_template("sell.html", shares=user.shares)
 
 
 def error_handler(e):

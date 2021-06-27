@@ -4,7 +4,6 @@ import urllib
 import requests
 
 from core.domain.stock import Stock
-from server.database.sqlite import db
 
 
 class StockService:
@@ -23,15 +22,6 @@ class StockService:
         # Parse response
         try:
             quote = response.json()
-            # Check whether we already have this stock in our database
-            rows = db.execute("SELECT * FROM stocks WHERE symbol = ?", quote["symbol"])
-
-            if len(rows) == 0:
-                # Register if stock is new
-                db.execute("INSERT INTO stocks(name, symbol) VALUES(?, ?)", quote["companyName"], quote["symbol"])
-                rows = db.execute("SELECT * FROM stocks WHERE symbol = ?", quote["symbol"])
-
-            stock = Stock(rows[0]["id"], rows[0]["name"], rows[0]["symbol"], float(quote["latestPrice"]))
-            return stock
+            return Stock(quote["companyName"], quote["symbol"], float(quote["latestPrice"]))
         except (KeyError, TypeError, ValueError):
             return None

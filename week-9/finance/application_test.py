@@ -7,8 +7,7 @@ import pytest
 def load_sql_file():
     with open('./sql/description.sql') as sql_file:
         sql_commands = sql_file.read()
-
-    yield sql_commands
+        yield sql_commands
 
 
 @pytest.fixture

@@ -1,11 +1,8 @@
+from flask import redirect, render_template
 from werkzeug.security import check_password_hash
-from flask import redirect
 
-from core.services.portfolio_service import PortfolioService
-from core.services.stock_service import StockService
 from core.services.user_service import UserService
 from server.helpers import apology
-from server.database.sqlite import db
 
 
 def register_user(request, session):
@@ -44,23 +41,20 @@ def signin(request, session):
     user_service = UserService()
     # Query database for username
     user = user_service.get_by_username(request.form.get("username"))
+    user.set_shares(user_service.get_shares(user.id))
 
     # Ensure username exists and password is correct
-    if not check_password_hash(user.hash, request.form.get("password")):
+    if not check_password_hash(user.get_hash(), request.form.get("password")):
         return apology("invalid username and/or password", 403)
 
     # Remember which user has logged in
     session["user_id"] = user.id
-
-    # Redirect user to home page
-    return redirect("/")
+    return render_template("index.html", user=user)
 
 
-def get_portfolio(session):
+def get_user(session):
     user_id = session["user_id"]
     user_service = UserService()
-
-    portfolio = user_service.get_portfolio(user_id)
-
-    return portfolio
-
+    user = user_service.get_by_id(user_id)
+    user.set_shares(user_service.get_shares(user.id))
+    return user

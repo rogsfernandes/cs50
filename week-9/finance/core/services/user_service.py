@@ -1,8 +1,8 @@
 from werkzeug.security import generate_password_hash
 
-from core.domain.portfolio import Portfolio
+from core.domain.shares import Share
 from core.domain.user import User
-from core.services.portfolio_service import PortfolioService
+from core.services.stock_service import StockService
 from server.database.sqlite import db
 
 
@@ -14,10 +14,12 @@ class UserService:
         return self.__get_by("username", username)
 
     def __get_by(self, property, value):
-        rows = db.execute(f"SELECT * FROM users WHERE {property} = ?", value)
+        rows = db.execute(
+            f"SELECT * FROM users WHERE {property} = ?", value
+        )
+        # Get user shares
         if len(rows) > 0:
-            row = rows[0]
-            return User(row["id"], row["username"], row["cash"], row["hash"])
+            return User(rows[0]["id"], rows[0]["username"], rows[0]["cash"], rows[0]["hash"], [])
         else:
             return None
 
@@ -38,8 +40,10 @@ class UserService:
             rows = db.execute("SELECT * FROM users WHERE username = ?", username)
             return rows
 
-    def get_portfolio(self, user_id):
-        user = self.get_by_id(user_id)
-        portfolio_service = PortfolioService()
-        portfolio = portfolio_service.get(user)
-        return portfolio
+    def get_shares(self, user_id):
+        stock_service = StockService()
+        rows = db.execute(
+            f"SELECT * FROM users JOIN users_shares on users.id = users_shares.user_id WHERE user_id = ?", user_id
+        )
+        shares = [Share(stock_service.get(row["symbol"]), row["shares"]) for row in rows]
+        return shares

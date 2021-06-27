@@ -16,12 +16,12 @@ Home
         </tr>
     </thead>
     <tbody>
-        {% for share in portfolio.shares %}
+        {% for share in user.shares %}
             <tr>
                 <td>{{share.stock.symbol}}</td>
                 <td>{{share.stock.name}}</td>
-                <td>{{share.quantity}}</td>
-                <td>{{share.average_price}}</td>
+                <td>{{share.number}}</td>
+                <td>{{share.stock.price}}</td>
                 <td>{{share.total}}</td>
             </tr>
         {% endfor %}
@@ -30,7 +30,7 @@ Home
             <td></td>
             <td></td>
             <td></td>
-            <td><strong>{{portfolio.total}}</strong></td>
+            <td><strong>{{user.total}}</strong></td>
         </tr>
     </tbody>
 </table>
