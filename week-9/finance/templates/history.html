@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block main %}
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Symbol</th>
+            <th scope="col">Company Name</th>
+            <th scope="col">Shares</th>
+            <th scope="col">Price</th>
+            <th scope="col">Total</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transaction in transactions %}
+            <tr>
+                <td>{{transaction.stock.symbol}}</td>
+                <td>{{transaction.stock.name}}</td>
+                <td>{{transaction.shares}}</td>
+                {% if transaction.type == 'BUY' %}
+                    <td style="color:#ea433b"><strong>{{transaction.stock.price}}</strong></td>
+                {% else %}
+                    <td style="color:#2e944b"><strong>{{transaction.stock.price}}</strong></td>
+                {% endif %}
+                <td>{{transaction.total}}</td>
+                <td>{{transaction.type}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -7,7 +7,7 @@ from werkzeug.exceptions import default_exceptions, HTTPException, InternalServe
 
 from core.services.stock_service import StockService
 from server.actions.stock import buy_stock, sell_stock
-from server.actions.user import register_user, signin, get_user
+from server.actions.user import register_user, signin, get_user, get_transactions
 from server.helpers import apology, login_required, usd
 
 # Configure application
@@ -62,7 +62,8 @@ def buy():
 @login_required
 def history():
     """Show history of transactions"""
-    return apology("TODO")
+    transactions = get_transactions(session)
+    return render_template("history.html", transactions=transactions)
 
 
 @app.route("/login", methods=["GET", "POST"])

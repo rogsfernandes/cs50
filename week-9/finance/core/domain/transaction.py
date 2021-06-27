@@ -3,14 +3,13 @@ from core.domain.stock import Stock
 
 class Transaction:
     stock: Stock
-    quantity: int
+    shares: int
     total: float
-    average_price: int
+    price: int
     type: str
 
-    def __init__(self, stock, quantity, total, average_price, type):
+    def __init__(self, stock, shares, total, type):
         self.stock = stock
-        self.quantity = quantity
+        self.shares = shares
         self.total = total
-        self.average_price = average_price
         self.type = type

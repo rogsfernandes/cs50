@@ -1,5 +1,6 @@
 from core.domain.stock import Stock
 from core.domain.transaction import Transaction
+from core.services.stock_service import StockService
 from server.database.sqlite import db
 
 
@@ -14,7 +15,11 @@ class TransactionService:
             if share["symbol"] == symbol:
                 is_update = True
                 updated_shares = int(share["shares"]) + shares if type == "BUY" else int(share["shares"]) - shares
-                db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ?", updated_shares, user_id)
+                if updated_shares == 0:
+                    db.execute("DELETE FROM users_shares WHERE user_id = ? AND symbol = ?", user_id, symbol)
+                else:
+                    db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ? AND symbol = ?", updated_shares,
+                               user_id, symbol)
 
         if not is_update and type == "BUY":
             db.execute("INSERT INTO users_shares (user_id, symbol, shares) VALUES (?, ?, ?)", user_id, symbol,
@@ -35,15 +40,17 @@ class TransactionService:
             type)
         return rows > 0
 
-    def get_by_user_and_symbol(self, user, symbol):
-        rows = db.execute("SELECT * FROM transactions WHERE user_id = ? AND symbol = ?;", user.id, symbol)
-        transactions = [Transaction(Stock(
-            row["name"],
-            row["symbol"],
-            row["price"]),
+    def get_by_user(self, user_id):
+        rows = db.execute("SELECT * FROM transactions WHERE user_id = ?", user_id)
+        stock_service = StockService()
+        transactions = [Transaction(
+            stock_service.get(row["symbol"]),
             row["shares"],
             row["total"],
-            row["average_price"],
-            row["type"]) for row in rows]
+            row["type"]
+        ) for row in rows]
+
+        for t in transactions:
+            print(t.stock.symbol)
 
         return transactions

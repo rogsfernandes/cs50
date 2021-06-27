@@ -6,17 +6,13 @@ Sell
 
 {% block main %}
 <form action="/sell" method="POST">
-    <div class="form-group">
-        <label for="stocks">Select one:</label>
-        <select id="stocks" name="symbol" class="form-control">
-            {% for share in shares %}
-            <option value="{{share.stock.symbol}}">{{share.stock.symbol}}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="form-group">
-        <input class="form-control" placeholder="Shares" type="number" name="shares">
-    </div>
+    <label for="stocks">Select one:</label>
+    <select id="stocks" name="symbol" class="form-control">
+        {% for share in shares %}
+        <option value="{{share.stock.symbol}}">{{share.stock.symbol}}</option>
+        {% endfor %}
+    </select>
+    <input class="form-control" placeholder="Shares" type="number" name="shares">
     <input class="form-control" type="submit" value="Sell">
 </form>
 {% endblock %}

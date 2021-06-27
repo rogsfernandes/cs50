@@ -1,6 +1,7 @@
 from flask import redirect, render_template
 from werkzeug.security import check_password_hash
 
+from core.services.transaction_service import TransactionService
 from core.services.user_service import UserService
 from server.helpers import apology
 
@@ -58,3 +59,10 @@ def get_user(session):
     user = user_service.get_by_id(user_id)
     user.set_shares(user_service.get_shares(user.id))
     return user
+
+
+def get_transactions(session):
+    user_id = session["user_id"]
+    transaction_service = TransactionService()
+    transactions = transaction_service.get_by_user(user_id)
+    return transactions
