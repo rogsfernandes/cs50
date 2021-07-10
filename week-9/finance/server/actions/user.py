@@ -3,23 +3,27 @@ from werkzeug.security import check_password_hash
 
 from core.services.transaction_service import TransactionService
 from core.services.user_service import UserService
-from server.helpers import apology
+from helpers import apology
 
 
 def register_user(request, session):
     # Ensure username was submitted
     if not request.form.get("username"):
-        return apology("must provide username", 403)
+        return apology("must provide username", 400)
 
     # Ensure password was submitted
     if not request.form.get("password"):
-        return apology("must provide password", 403)
+        return apology("must provide password", 400)
 
     # Ensure confirmation is equal password
     if request.form.get("password") != request.form.get("confirmation"):
-        return apology("password and confirmation doesn't match", 403)
+        return apology("password and confirmation doesn't match", 400)
 
     user_service = UserService()
+
+    if user_service.get_by_username(request.form.get("username")):
+        return apology("username already exists", 400)
+
     rows = user_service.register(request.form.get("username"), request.form.get("password"))
 
     if len(rows) > 0:
@@ -53,7 +57,7 @@ def signin(request, session):
 
     # Remember which user has logged in
     session["user_id"] = user.id
-    return render_template("index.html", user=user)
+    return redirect("/")
 
 
 def get_user(session):

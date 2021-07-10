@@ -1,10 +1,9 @@
 from flask import session, render_template
-from werkzeug.utils import redirect
 
 from core.services.stock_service import StockService
 from core.services.transaction_service import TransactionService
 from core.services.user_service import UserService
-from server.helpers import apology
+from helpers import apology
 
 
 def buy_stock(request):
