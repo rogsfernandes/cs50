@@ -42,6 +42,9 @@ def signin(request, session):
     user_service = UserService()
     # Query database for username
     user = user_service.get_by_username(request.form.get("username"))
+    if not user:
+        return apology("invalid username and/or password", 403)
+
     user.set_shares(user_service.get_shares(user.id))
 
     # Ensure username exists and password is correct

@@ -44,12 +44,13 @@ class TransactionService:
 
     def register_sell(self, user_shares, shares, user_id, symbol, total):
         for share in user_shares:
-            updated_shares = int(share["shares"]) - shares
-            if updated_shares == 0:
-                db.execute("DELETE FROM users_shares WHERE user_id = ? AND symbol = ?", user_id, symbol)
-            else:
-                db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ? AND symbol = ?", updated_shares,
-                           user_id, symbol)
+            if share["symbol"] == symbol:
+                updated_shares = int(share["shares"]) - shares
+                if updated_shares == 0:
+                    db.execute("DELETE FROM users_shares WHERE user_id = ? AND symbol = ?", user_id, symbol)
+                else:
+                    db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ? AND symbol = ?", updated_shares,
+                               user_id, symbol)
         user_service = UserService()
         user_service.add_cash(user_id, total)
 
