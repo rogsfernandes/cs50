@@ -24,13 +24,12 @@ def buy_stock(request):
     transaction_service = TransactionService()
 
     # Gets user available cash
-    success = transaction_service.register(id, stock.symbol, stock.price, shares, "BUY")
-    user = user_service.get_by_id(id)
-    user.set_shares(user_service.get_shares(user.id))
-
-    if success:
+    try:
+        transaction_service.register(id, stock.symbol, stock.price, shares, "BUY")
+        user = user_service.get_by_id(id)
+        user.set_shares(user_service.get_shares(user.id))
         return render_template("index.html", user=user)
-    else:
+    except ValueError:
         return apology("Not enough money!")
 
 
@@ -45,7 +44,8 @@ def sell_stock(request):
         if share.stock.symbol == request.form.get("symbol") and share.number >= int(request.form.get("shares")):
             found = True
             transaction_service = TransactionService()
-            transaction_service.register(user.id, request.form.get("symbol"), share.stock.price, int(request.form.get("shares")), "SELL")
+            transaction_service.register(user.id, request.form.get("symbol"), share.stock.price,
+                                         int(request.form.get("shares")), "SELL")
 
             user = user_service.get_by_id(user_id)
             user.set_shares(user_service.get_shares(user.id))

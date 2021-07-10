@@ -6,23 +6,19 @@ from server.database.sqlite import db
 
 
 class TransactionService:
-    def validate_transaction(self, user_id, total):
+    def validate(self, user_id, total):
         user_service = UserService()
         user = user_service.get_by_id(user_id)
-        if user.cash > total:
-            return True
-        else:
-            return False
+        if total > user.cash:
+            raise ValueError('Not enough money')
 
     def register(self, user_id, symbol, price, shares, type):
         # Register user share
         total = shares * price
+        self.validate(user_id, total)
         user_shares = db.execute("SELECT * FROM users_shares WHERE user_id = ?", user_id)
 
         if type == "BUY":
-            valid = self.validate_transaction(user_id, total)
-            if not valid:
-                return None
             self.register_buy(user_shares, shares, user_id, symbol, total)
         elif type == "SELL":
             self.register_sell(user_shares, shares, user_id, symbol, total)
