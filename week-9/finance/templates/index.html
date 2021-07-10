@@ -21,8 +21,8 @@ Home
                 <td>{{share.stock.symbol}}</td>
                 <td>{{share.stock.name}}</td>
                 <td>{{share.number}}</td>
-                <td>{{share.stock.price}}</td>
-                <td>{{share.total}}</td>
+                <td>{{share.stock.price | usd}}</td>
+                <td>{{share.total | usd}}</td>
             </tr>
         {% endfor %}
         <tr>
@@ -30,14 +30,14 @@ Home
             <td></td>
             <td></td>
             <td>Total:</td>
-            <td><strong>{{user.total}}</strong></td>
+            <td><strong>{{user.total | usd}}</strong></td>
         </tr>
         <tr>
             <td></td>
             <td></td>
             <td></td>
             <td>Balance:</td>
-            <td><strong>{{user.balance}}</strong></td>
+            <td><strong>{{user.balance | usd}}</strong></td>
         </tr>
     </tbody>
 </table>

@@ -100,7 +100,10 @@ def quote():
     if request.method == "POST":
         stock_service = StockService()
         stock = stock_service.get(request.form.get("symbol"))
-        return render_template("quoted.html", quote=stock)
+        if not stock:
+            return apology("Stock Not Found!", 404)
+        else:
+            return render_template("quoted.html", quote=stock)
     else:
         return render_template("quote.html")
 
