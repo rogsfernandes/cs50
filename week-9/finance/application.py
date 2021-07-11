@@ -82,13 +82,14 @@ def buy():
                 return apology("Number of shares must be a positive integer.")
 
         stock_service = StockService()
-        stock = stock_service.get(request.form.get("symbol"))
+        quote = lookup(request.form.get("symbol"))
 
-        if not stock:
+        if not quote:
             return apology("Stock not found!")
 
+        stock = Stock(quote["name"], quote["symbol"], quote["price"])
         user_id = session["user_id"]
-        shares = int(request.form.get("shares"))
+        shares = float(request.form.get("shares"))
         symbol = request.form.get("symbol")
         price = stock.price
         amount = shares * stock.price
@@ -100,14 +101,14 @@ def buy():
             return apology("Transaction value is bigger than available money")
 
         rows = db.execute("SELECT * FROM users_shares WHERE user_id = ?", user_id)
-        user_shares = [Share(stock_service.get(row["symbol"]), row["shares"]) for row in rows]
+        user_shares = [Share(stock_service.get(row["symbol"]), int(row["shares"])) for row in rows]
         is_update = False
 
         # Check if user already has shares of this stock
         for share in user_shares:
             if share.stock.symbol == symbol:
                 is_update = True
-                updated_shares = int(share["shares"]) + shares
+                updated_shares = share.number + shares
                 db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ? AND symbol = ?", updated_shares,
                            user_id, symbol)
 

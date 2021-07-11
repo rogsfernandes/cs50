@@ -5,7 +5,7 @@ Home
 {% endblock %}
 
 {% block main %}
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th scope="col">Symbol</th>
@@ -25,8 +25,10 @@ Home
                 <td>{{share.total | usd}}</td>
             </tr>
         {% endfor %}
+    </tbody>
+    <tfoot>
         <tr>
-            <td></td>
+            <td>CASH</td>
             <td></td>
             <td></td>
             <td>Total:</td>
@@ -39,6 +41,6 @@ Home
             <td>Balance:</td>
             <td><strong>{{user.balance | usd}}</strong></td>
         </tr>
-    </tbody>
+    </tfoot>
 </table>
 {% endblock %}

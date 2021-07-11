@@ -9,4 +9,4 @@ class Share:
     def __init__(self, stock: Stock, number: int):
         self.stock = stock
         self.number = number
-        self.total = stock.price * number
+        self.total = float(stock.price * number)

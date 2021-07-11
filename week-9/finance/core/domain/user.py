@@ -27,4 +27,4 @@ class User:
 
     def set_shares(self, shares):
         self.shares = shares
-        self.total = reduce(lambda acc, value: acc + value.total, shares, 0)
+        self.total = reduce(lambda acc, value: acc + value.total, shares, 0.0)
