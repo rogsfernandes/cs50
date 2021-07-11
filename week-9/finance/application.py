@@ -124,7 +124,7 @@ def quote():
         stock_service = StockService()
         stock = stock_service.get(request.form.get("symbol"))
         if not stock:
-            return apology("Stock Not Found!", 400)
+            return apology("Invalid Stock!", 400)
         else:
             return render_template("quoted.html", quote=stock)
     else:
