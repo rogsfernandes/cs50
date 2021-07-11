@@ -4,13 +4,16 @@ from tempfile import mkdtemp
 from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
+from werkzeug.security import check_password_hash
 
 from core.services.stock_service import StockService
 from server.actions.stock import buy_stock, sell_stock
-from server.actions.user import register_user, signin, get_user, get_transactions
+from server.actions.user import register_user, get_user, get_transactions
 from helpers import apology, login_required, usd
 
 # Configure application
+from server.database.sqlite import db
+
 app = Flask(__name__)
 
 # Ensure templates are auto-reloaded
@@ -75,7 +78,27 @@ def login():
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-        return signin(request, session)
+
+        # Ensure username was submitted
+        if not request.form.get("username"):
+            return apology("must provide username", 403)
+
+        # Ensure password was submitted
+        elif not request.form.get("password"):
+            return apology("must provide password", 403)
+
+        # Query database for username
+        rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
+
+        # Ensure username exists and password is correct
+        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
+            return apology("invalid username and/or password", 403)
+
+        # Remember which user has logged in
+        session["user_id"] = rows[0]["id"]
+
+        # Redirect user to home page
+        return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -110,9 +133,27 @@ def quote():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """Register user"""
-    if request.method == "POST":
-        return register_user(request, session)
+    if request.method == 'POST':
+        # Ensure username was submitted
+        if not request.form.get("username"):
+            return apology("must provide username", 400)
+
+        # Ensure password was submitted
+        if not request.form.get("password"):
+            return apology("must provide password", 400)
+
+        # Ensure confirmation is equal password
+        if request.form.get("password") != request.form.get("confirmation"):
+            return apology("password and confirmation doesn't match", 400)
+
+        """Register user"""
+        if request.method == "POST":
+            user = register_user(request.form.get("username"), request.form.get("password"))
+            if not user:
+                return apology("Not possible to register, possibly duplicate", 400)
+            else:
+                session["user_id"] = user.id
+                return redirect("/")
     else:
         return render_template("register.html")
 
@@ -126,7 +167,7 @@ def sell():
             user = sell_stock(request)
             return render_template("index.html", user=user)
         except ValueError:
-            return apology("No shares to sell.")
+            return apology("No shares to sell")
     else:
         user = get_user(session)
         return render_template("sell.html", shares=user.shares)

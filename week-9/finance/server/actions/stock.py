@@ -24,7 +24,7 @@ def buy_stock(request):
 
     # Gets user available cash
     try:
-        transaction_service.register(id, stock.symbol, stock.price, shares, "BUY")
+        transaction_service.register_buy(id, stock.symbol, stock.price, shares, "BUY")
         user = user_service.get_by_id(id)
         user.set_shares(user_service.get_shares(user.id))
         return render_template("index.html", user=user)
@@ -43,7 +43,7 @@ def sell_stock(request):
         if share.stock.symbol == request.form.get("symbol") and share.number >= int(request.form.get("shares")):
             found = True
             transaction_service = TransactionService()
-            transaction_service.register(user.id, request.form.get("symbol"), share.stock.price,
+            transaction_service.register_sell(user.id, request.form.get("symbol"), share.stock.price,
                                          int(request.form.get("shares")), "SELL")
 
             user = user_service.get_by_id(user_id)

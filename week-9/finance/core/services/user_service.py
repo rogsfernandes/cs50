@@ -39,6 +39,8 @@ class UserService:
             # Query database for username
             rows = db.execute("SELECT * FROM users WHERE username = ?", username)
             return rows
+        else:
+            return None
 
     def get_shares(self, user_id):
         stock_service = StockService()

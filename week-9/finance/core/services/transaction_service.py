@@ -6,35 +6,12 @@ from server.database.sqlite import db
 
 
 class TransactionService:
-    def validate(self, user_id, total):
-        user_service = UserService()
-        user = user_service.get_by_id(user_id)
-        if total > user.cash:
-            raise ValueError('Not enough money')
-
-    def register(self, user_id, symbol, price, shares, type):
+    def register_buy(self, user_id, symbol, price, shares, type):
         # Register user share
         total = shares * price
-        self.validate(user_id, total)
+        self.validate_buy(user_id, total)
         user_shares = db.execute("SELECT * FROM users_shares WHERE user_id = ?", user_id)
 
-        if type == "BUY":
-            self.register_buy(user_shares, shares, user_id, symbol, total)
-        elif type == "SELL":
-            self.register_sell(user_shares, shares, user_id, symbol, total)
-
-        # Register transaction
-        rows = db.execute(
-            "INSERT INTO transactions (user_id, symbol, shares, price, total, type) values (?, ?, ?, ?, ?, ?)",
-            user_id,
-            symbol,
-            shares,
-            price,
-            total,
-            type)
-        return rows > 0
-
-    def register_buy(self, user_shares, shares, user_id, symbol, total):
         is_update = False
         for share in user_shares:
             if share["symbol"] == symbol:
@@ -48,11 +25,24 @@ class TransactionService:
                        shares)
         user_service = UserService()
         user_service.subtract_cash(user_id, total)
+        return self.register(user_id, symbol, price, shares, total, type)
 
-    def register_sell(self, user_shares, shares, user_id, symbol, total):
+    def validate_buy(self, user_id, total):
+        user_service = UserService()
+        user = user_service.get_by_id(user_id)
+        if total > user.cash:
+            raise ValueError('Not enough money')
+
+    def register_sell(self, user_id, symbol, price, quantity, type):
+        # Register user share
+        total = quantity * price
+        user_shares = db.execute("SELECT * FROM users_shares WHERE user_id = ?", user_id)
+
         for share in user_shares:
             if share["symbol"] == symbol:
-                updated_shares = int(share["shares"]) - shares
+                shares = int(share["shares"])
+                self.validate_sell(shares, quantity)
+                updated_shares = shares - quantity
                 if updated_shares == 0:
                     db.execute("DELETE FROM users_shares WHERE user_id = ? AND symbol = ?", user_id, symbol)
                 else:
@@ -60,6 +50,24 @@ class TransactionService:
                                user_id, symbol)
         user_service = UserService()
         user_service.add_cash(user_id, total)
+        return self.register(user_id, symbol, price, quantity, total, type)
+
+    def validate_sell(self, shares, quantity):
+        if quantity > shares:
+            print(f'Error trying to sell shares: user has {shares} shares and tried to sell {quantity}')
+            raise ValueError('Not enough shares to sell')
+
+    def register(self, user_id, symbol, price, shares, total, type):
+        # Register transaction
+        rows = db.execute(
+            "INSERT INTO transactions (user_id, symbol, shares, price, total, type) values (?, ?, ?, ?, ?, ?)",
+            user_id,
+            symbol,
+            shares,
+            price,
+            total,
+            type)
+        return rows > 0
 
     def get_by_user(self, user_id):
         rows = db.execute("SELECT * FROM transactions WHERE user_id = ?", user_id)
