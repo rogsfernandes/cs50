@@ -11,7 +11,6 @@ from core.domain.shares import Share
 from core.domain.stock import Stock
 from core.domain.transaction import Transaction
 from core.domain.user import User
-from core.services.stock_service import StockService
 from helpers import apology, login_required, usd, lookup
 
 # Configure application
@@ -55,11 +54,14 @@ def index():
     rows = db.execute("SELECT * FROM users where id = ?", user_id)
     user = User(rows[0]["id"], rows[0]["username"], rows[0]["cash"], rows[0]["hash"], [])
 
-    stock_service = StockService()
     rows = db.execute(
         f"SELECT * FROM users JOIN users_shares on users.id = users_shares.user_id WHERE user_id = ?", user_id
     )
-    shares = [Share(stock_service.get(row["symbol"]), row["shares"]) for row in rows]
+    shares = []
+    for row in rows:
+        stock = lookup(row["symbol"])
+        shares.append(Share(Stock(stock["name"], stock["symbol"], stock["price"]), row["shares"]))
+
     user.set_shares(shares)
 
     return render_template("index.html", user=user)
@@ -79,13 +81,14 @@ def buy():
             if not request.form.get("shares") or int(request.form.get("shares")) < 0:
                 return apology("Number of shares must be a positive integer.")
         except ValueError:
-                return apology("Number of shares must be a positive integer.")
+            return apology("Number of shares must be a positive integer.")
 
-        stock_service = StockService()
-        stock = stock_service.get(request.form.get("symbol"))
+        stock_quote = lookup(request.form.get("symbol"))
 
-        if not stock:
+        if not stock_quote:
             return apology("Stock not found!")
+
+        stock = Stock(stock_quote["name"], stock_quote["symbol"], stock_quote["price"])
 
         user_id = session["user_id"]
         shares = float(request.form.get("shares"))
@@ -100,7 +103,13 @@ def buy():
             return apology("Transaction value is bigger than available money")
 
         rows = db.execute("SELECT * FROM users_shares WHERE user_id = ?", user_id)
-        user_shares = [Share(stock_service.get(row["symbol"]), int(row["shares"])) for row in rows]
+        user_shares = []
+
+        for row in rows:
+            stock_quote = lookup(row["symbol"])
+            user_shares.append(
+                Share(Stock(stock_quote["name"], stock_quote["symbol"], stock_quote["price"]), row["shares"]))
+
         is_update = False
 
         # Check if user already has shares of this stock
@@ -138,13 +147,13 @@ def history():
     """Show history of transactions"""
     user_id = session["user_id"]
     rows = db.execute("SELECT * FROM transactions WHERE user_id = ?", user_id)
-    stock_service = StockService()
-    transactions = [Transaction(
-        stock_service.get(row["symbol"]),
-        row["shares"],
-        row["total"],
-        row["type"]
-    ) for row in rows]
+    transactions = []
+
+    for row in rows:
+        stock_quote = lookup(row["symbol"])
+        stock = Stock(stock_quote["name"], stock_quote["symbol"], stock_quote["price"])
+        transactions.append(Transaction(stock, row["shares"], row["total"], row["type"]))
+
     return render_template("history.html", transactions=transactions)
 
 
@@ -200,11 +209,11 @@ def logout():
 def quote():
     """Quote the value of a stock"""
     if request.method == "POST":
-        quote = lookup(request.form.get("symbol"))
-        if not quote:
+        stock_quote = lookup(request.form.get("symbol"))
+        if not stock_quote:
             return apology("Invalid Stock!", 400)
         else:
-            stock = Stock(quote["name"], quote["symbol"], quote["price"])
+            stock = Stock(stock_quote["name"], stock_quote["symbol"], stock_quote["price"])
             return render_template("quoted.html", quote=stock)
     else:
         return render_template("quote.html")
@@ -251,12 +260,13 @@ def sell():
         if not request.form.get("symbol"):
             return apology("Symbol not found!")
 
-        stock_service = StockService()
-        stock = stock_service.get(request.form.get("symbol"))
+        stock_quote = lookup(request.form.get("symbol"))
 
         # Validate shares number
-        if not stock:
+        if not stock_quote:
             return apology("Stock not found!")
+
+        stock = Stock(stock_quote["name"], stock_quote["symbol"], stock_quote["price"])
 
         try:
             user_id = session["user_id"]
@@ -266,7 +276,12 @@ def sell():
             amount = quantity * stock.price
 
             rows = db.execute("SELECT * FROM users_shares WHERE user_id = ?", user_id)
-            user_shares = [Share(stock_service.get(row["symbol"]), row["shares"]) for row in rows]
+            user_shares = []
+
+            for row in rows:
+                stock_quote = lookup(row["symbol"])
+                user_shares.append(
+                    Share(Stock(stock_quote["name"], stock_quote["symbol"], stock_quote["price"]), row["shares"]))
 
             if len(user_shares) == 0:
                 return apology("No shares to sell")
@@ -277,9 +292,11 @@ def sell():
                         return apology(f"You have {share.number} available for selling.")
                     updated_shares = share.number - quantity
                     if updated_shares == 0:
-                        db.execute("DELETE FROM users_shares WHERE user_id = ? AND symbol = ?", user_id, request.form.get("symbol"))
+                        db.execute("DELETE FROM users_shares WHERE user_id = ? AND symbol = ?", user_id,
+                                   request.form.get("symbol"))
                     else:
-                        db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ? AND symbol = ?", updated_shares, user_id, request.form.get("symbol"))
+                        db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ? AND symbol = ?",
+                                   updated_shares, user_id, request.form.get("symbol"))
 
             rows = db.execute("SELECT * FROM users WHERE id = ?", user_id)
             # Add money to user's cash
@@ -297,7 +314,7 @@ def sell():
 
             return redirect("/")
         except ValueError:
-            return apology("Something went wront")
+            return apology("Something went wrong")
     else:
         user_id = session["user_id"]
         rows = db.execute("SELECT * FROM users_shares WHERE user_id = ?", user_id)
@@ -316,6 +333,7 @@ def cash():
     db.execute("UPDATE users SET cash = ?", total)
 
     return redirect("/")
+
 
 def error_handler(e):
     """Handle error"""

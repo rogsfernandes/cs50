@@ -1,9 +1,7 @@
 from werkzeug.security import generate_password_hash
 
 from application import db
-from core.domain.shares import Share
 from core.domain.user import User
-from core.services.stock_service import StockService
 
 
 class UserService:
@@ -41,14 +39,6 @@ class UserService:
             return rows
         else:
             return None
-
-    def get_shares(self, user_id):
-        stock_service = StockService()
-        rows = db.execute(
-            f"SELECT * FROM users JOIN users_shares on users.id = users_shares.user_id WHERE user_id = ?", user_id
-        )
-        shares = [Share(stock_service.get(row["symbol"]), row["shares"]) for row in rows]
-        return shares
 
     def add_cash(self, user_id, amount):
         user = self.get_by_id(user_id)
