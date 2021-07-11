@@ -12,7 +12,7 @@ from core.domain.stock import Stock
 from core.domain.transaction import Transaction
 from core.domain.user import User
 from core.services.stock_service import StockService
-from helpers import apology, login_required, usd
+from helpers import apology, login_required, usd, lookup
 
 # Configure application
 app = Flask(__name__)
@@ -74,8 +74,12 @@ def buy():
         if not request.form.get("symbol"):
             return apology("Symbol not found!")
         # Validate shares number
-        if not request.form.get("shares") or int(request.form.get("shares")) < 0:
-            return apology("Number of shares must be a positive number.")
+
+        try:
+            if not request.form.get("shares") or int(request.form.get("shares")) < 0:
+                return apology("Number of shares must be a positive integer.")
+        except ValueError:
+                return apology("Number of shares must be a positive integer.")
 
         stock_service = StockService()
         stock = stock_service.get(request.form.get("symbol"))
@@ -101,10 +105,11 @@ def buy():
 
         # Check if user already has shares of this stock
         for share in user_shares:
-            is_update = True
-            updated_shares = int(share["shares"]) + shares
-            db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ? AND symbol = ?", updated_shares,
-                       user_id, symbol)
+            if share.stock.symbol == symbol:
+                is_update = True
+                updated_shares = int(share["shares"]) + shares
+                db.execute("UPDATE users_shares SET shares = ? WHERE user_id = ? AND symbol = ?", updated_shares,
+                           user_id, symbol)
 
         # Insert new share for the user if it's a new share for they
         if not is_update:
@@ -195,11 +200,11 @@ def logout():
 def quote():
     """Quote the value of a stock"""
     if request.method == "POST":
-        stock_service = StockService()
-        stock = stock_service.get(request.form.get("symbol"))
-        if not stock:
+        quote = lookup(request.form.get("symbol"))
+        if not quote:
             return apology("Invalid Stock!", 400)
         else:
+            stock = Stock(quote["name"], quote["symbol"], quote["price"])
             return render_template("quoted.html", quote=stock)
     else:
         return render_template("quote.html")
@@ -269,7 +274,7 @@ def sell():
             for share in user_shares:
                 if share.stock.symbol == request.form.get("symbol"):
                     if share.number < quantity:
-                        return apology("Sorry, you can not sell more than you own.")
+                        return apology(f"You have {share.number} available for selling.")
                     updated_shares = share.number - quantity
                     if updated_shares == 0:
                         db.execute("DELETE FROM users_shares WHERE user_id = ? AND symbol = ?", user_id, request.form.get("symbol"))
