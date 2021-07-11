@@ -17,10 +17,9 @@ class User:
     def __init__(self, id, username, cash, hash: str, shares: List[Share]):
         self.id = id
         self.username = username
-        self.cash = cash
+        self.cash = float(cash)
         self.__hash = hash
         self.set_shares(shares)
-        self.balance = self.cash + self.total
 
     def get_hash(self):
         return self.__hash
@@ -28,3 +27,4 @@ class User:
     def set_shares(self, shares):
         self.shares = shares
         self.total = reduce(lambda acc, value: acc + value.total, shares, 0.0)
+        self.balance = self.cash + self.total

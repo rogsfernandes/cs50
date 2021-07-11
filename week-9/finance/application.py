@@ -82,12 +82,11 @@ def buy():
                 return apology("Number of shares must be a positive integer.")
 
         stock_service = StockService()
-        quote = lookup(request.form.get("symbol"))
+        stock = stock_service.get(request.form.get("symbol"))
 
-        if not quote:
+        if not stock:
             return apology("Stock not found!")
 
-        stock = Stock(quote["name"], quote["symbol"], quote["price"])
         user_id = session["user_id"]
         shares = float(request.form.get("shares"))
         symbol = request.form.get("symbol")
@@ -305,6 +304,18 @@ def sell():
         shares = [Share(Stock(None, row["symbol"], 0), row["shares"]) for row in rows]
         return render_template("sell.html", shares=shares)
 
+
+@app.route("/cash", methods=["POST"])
+@login_required
+def cash():
+    amount = float(request.form.get("amount"))
+    user_id = session["user_id"]
+    rows = db.execute("SELECT * FROM users WHERE id = ?", user_id)
+    user = User(rows[0]["id"], rows[0]["username"], rows[0]["cash"], rows[0]["hash"], [])
+    total = user.cash + amount
+    db.execute("UPDATE users SET cash = ?", total)
+
+    return redirect("/")
 
 def error_handler(e):
     """Handle error"""

@@ -31,16 +31,24 @@ Home
             <td>CASH</td>
             <td></td>
             <td></td>
-            <td>Total:</td>
-            <td><strong>{{user.total | usd}}</strong></td>
+            <td></td>
+            <td><strong>{{user.cash | usd}}</strong></td>
         </tr>
         <tr>
             <td></td>
             <td></td>
             <td></td>
-            <td>Balance:</td>
+            <td>Total:</td>
             <td><strong>{{user.balance | usd}}</strong></td>
         </tr>
     </tfoot>
 </table>
+
+
+<form action="/cash" method="post">
+    <div class="form-group">
+        <input autocomplete="off" autofocus class="form-control" name="amount" placeholder="$1000.00" type="number">
+        <button class="btn btn-primary" type="submit">Add</button>
+    </div>
+</form>
 {% endblock %}
