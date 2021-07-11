@@ -6,8 +6,12 @@ Buy
 
 {% block main %}
 <form class="form-group" action="/buy" method="POST">
-    <input class="form-control" placeholder="Symbol" type="text" name="symbol">
-    <input class="form-control" placeholder="Shares" type="number" name="shares">
-    <input class="form-control" type="submit" value="Buy">
+    <div class="form-group">
+        <input autocomplete="off" autofocus="" class="form-control" name="symbol" placeholder="Symbol" type="text">
+    </div>
+    <div class="form-group">
+        <input class="form-control" name="shares" placeholder="Shares" type="text">
+    </div>
+    <button class="btn btn-primary" type="submit">Buy</button>
 </form>
 {% endblock %}

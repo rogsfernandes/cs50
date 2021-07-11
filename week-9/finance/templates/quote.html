@@ -6,7 +6,9 @@ Quote
 
 {% block main %}
 <form class="form-group" action="/quote" method="POST">
-    <input class="form-control" placeholder="Symbol" type="text" name="symbol">
-    <button class="form-control" type="submit">Quote</button>
+    <div class="form-group">
+        <input autocomplete="off" autofocus="" class="form-control" name="symbol" placeholder="Symbol" type="text">
+    </div>
+    <button class="btn btn-primary" type="submit">Quote</button>
 </form>
 {% endblock %}

@@ -40,7 +40,7 @@ def signin(request, session):
         return apology("must provide username", 403)
 
     # Ensure password was submitted
-    elif not request.form.get("password"):
+    if not request.form.get("password"):
         return apology("must provide password", 403)
 
     user_service = UserService()
@@ -49,11 +49,11 @@ def signin(request, session):
     if not user:
         return apology("invalid username and/or password", 403)
 
-    user.set_shares(user_service.get_shares(user.id))
-
     # Ensure username exists and password is correct
     if not check_password_hash(user.get_hash(), request.form.get("password")):
         return apology("invalid username and/or password", 403)
+
+    user.set_shares(user_service.get_shares(user.id))
 
     # Remember which user has logged in
     session["user_id"] = user.id
