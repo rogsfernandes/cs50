@@ -1,9 +1,9 @@
 from werkzeug.security import generate_password_hash
 
+from application import db
 from core.domain.shares import Share
 from core.domain.user import User
 from core.services.stock_service import StockService
-from server.database.sqlite import db
 
 
 class UserService:
