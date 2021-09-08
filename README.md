@@ -12,11 +12,11 @@ This is my personal take on Harvard's CS50 programs (Web, AI and Games) in order
 
 Some problems are solved in C and others in Python.
 
-|   Language |  Dependencies:                       |
-| ---------- | --------------------                 |
-| C |  [cs50 lib for C](https://github.com/cs50/libcs50)  |
-| Python |  cs50 lib for python  |
-| JavaScript |  node  |
+|   Language |  Dependencies:                                      |
+| ---------- | --------------------                                |
+| C          |  [cs50 lib for C](https://github.com/cs50/libcs50)  |
+| Python     |  cs50 lib for python                                |
+| JavaScript |  node                                               |
 
 
 
